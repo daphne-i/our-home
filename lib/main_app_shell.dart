@@ -97,7 +97,7 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       // Replaced NavigationBar with BottomAppBar for the "notch"
       bottomNavigationBar: BottomAppBar(
-        height: 65, // Increased height to accommodate icon + label
+        height: 60, // Reduced height since no labels
         shape: const CircularNotchedRectangle(),
         notchMargin: 8.0, // Space around the FAB
         child: Row(
@@ -106,10 +106,7 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
           children: <Widget>[
             _buildNavItem(
               // Use filled icon for selected, outlined for unselected
-              icon: _selectedIndex == 0
-                  ? EvaIcons.home
-                  : EvaIcons.homeOutline,
-              label: 'Dashboard',
+              icon: _selectedIndex == 0 ? EvaIcons.home : EvaIcons.homeOutline,
               index: 0,
               theme: theme,
             ),
@@ -118,7 +115,6 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
               icon: _selectedIndex == 1
                   ? EvaIcons.calendar
                   : EvaIcons.calendarOutline,
-              label: 'Planner',
               index: 1,
               theme: theme,
             ),
@@ -126,10 +122,7 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
             const SizedBox(width: 48),
             _buildNavItem(
               // Use filled icon for selected, outlined for unselected
-              icon: _selectedIndex == 2
-                  ? EvaIcons.book
-                  : EvaIcons.bookOutline,
-              label: 'Library',
+              icon: _selectedIndex == 2 ? EvaIcons.book : EvaIcons.bookOutline,
               index: 2,
               theme: theme,
             ),
@@ -138,7 +131,6 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
               icon: _selectedIndex == 3
                   ? EvaIcons.settings
                   : EvaIcons.settingsOutline,
-              label: 'Settings',
               index: 3,
               theme: theme,
             ),
@@ -151,43 +143,35 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
   // Helper widget to build a single nav item
   Widget _buildNavItem({
     required IconData icon,
-    required String label,
     required int index,
     required ThemeData theme,
   }) {
     // Check if this item is the currently selected one
     final isSelected = _selectedIndex == index;
-    // Get the correct color from the theme
+    // Get better contrast colors for visibility
     final color = isSelected
         ? theme.colorScheme.primary // Selected = Primary (Red)
-        : theme.colorScheme.onSurface
-            .withOpacity(0.6); // Unselected = Neutral (60% Text Color)
+        : theme.colorScheme.onSurface; // Unselected = High contrast
 
     return Expanded(
-      child: InkWell(
-        onTap: () => _onItemTapped(index),
-        // Make the ripple effect circular
-        borderRadius: BorderRadius.circular(100),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon,
-                  color: color, size: 26), // Increased size for more prominence
-              const SizedBox(height: 1),
-              Text(
-                label,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  fontSize: 10,
-                  color: color, // Use the same color as the icon
-                  height: 0.9,
-                  fontWeight: FontWeight.w600, // Make text more bold
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+      child: Center(
+        child: InkWell(
+          onTap: () => _onItemTapped(index),
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            width: 48, // Fixed width to prevent stretching
+            height: 48, // Fixed height to maintain square shape
+            decoration: isSelected
+                ? BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20),
+                  )
+                : null,
+            child: Icon(
+              icon,
+              color: color,
+              size: isSelected ? 34 : 30, // Larger when selected
+            ),
           ),
         ),
       ),
