@@ -35,45 +35,63 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
     // As per design doc, this opens the "Quick Add" modal
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Allows modal to be taller
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent, // Make background transparent
       builder: (context) {
-        // TODO: Build the "Quick Add" modal widget
         return Container(
-          padding: const EdgeInsets.all(24),
-          height: 250,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Quick Add',
-                style: Theme.of(context).textTheme.headlineMedium,
+          margin:
+              const EdgeInsets.symmetric(horizontal: 16), // Add horizontal gaps
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    20, 20, 20, 12), // Reduced bottom padding
+                child: Column(
+                  mainAxisSize:
+                      MainAxisSize.min, // Important: prevents overflow
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Quick Add',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                      leading: const Icon(EvaIcons.creditCardOutline),
+                      title: const Text('Add Expense'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Navigate to Add Expense flow
+                      },
+                    ),
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                      leading: const Icon(EvaIcons.clipboardOutline),
+                      title: const Text('Add Task'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Navigate to Add Task flow
+                      },
+                    ),
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                      leading: const Icon(EvaIcons.shoppingCartOutline),
+                      title: const Text('Add to Shopping List'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Navigate to Add Shopping Item flow
+                      },
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 20),
-              ListTile(
-                leading: const Icon(EvaIcons.creditCardOutline),
-                title: const Text('Add Expense'),
-                onTap: () {
-                  Navigator.pop(context);
-                  // TODO: Navigate to Add Expense flow
-                },
-              ),
-              ListTile(
-                leading: const Icon(EvaIcons.clipboardOutline),
-                title: const Text('Add Task'),
-                onTap: () {
-                  Navigator.pop(context);
-                  // TODO: Navigate to Add Task flow
-                },
-              ),
-              ListTile(
-                leading: const Icon(EvaIcons.shoppingCartOutline),
-                title: const Text('Add to Shopping List'),
-                onTap: () {
-                  Navigator.pop(context);
-                  // TODO: Navigate to Add Shopping Item flow
-                },
-              ),
-            ],
+            ),
           ),
         );
       },
@@ -92,6 +110,7 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _onFabPressed,
+        shape: const CircleBorder(), // Ensures perfect circle
         child: const Icon(EvaIcons.plus),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
