@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homely/features/auth/presentation/auth_gate.dart';
 // TODO: Import your Firebase options file
-// import 'firebase_options.dart';;;
+import 'firebase_options.dart';
 // import 'package:firebase_core/firebase_core.dart';
 
 // Import our new theme files
