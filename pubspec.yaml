@@ -1,0 +1,45 @@
+name: homely
+description: A "kickass" consolidated home management app.
+publish_to: 'none' # Remove this line if you want to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.3 <4.0.0' # From your design doc
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Backend & State
+  firebase_core: ^3.1.1 # Required for all Firebase
+  firebase_auth: ^5.1.1 # For user login/register
+  cloud_firestore: ^5.1.0 # Our database
+  flutter_riverpod: ^2.5.1 # Our state management
+  riverpod_annotation: ^2.6.1 # Our "kickass" icon pack (FIXED)
+  
+  # UI & Design
+  google_fonts: ^6.2.1 # Poppins & Inter fonts
+  eva_icons_flutter: ^3.1.0 # Eva Icons pack
+  flutter_animate: ^4.5.0 # For "juice" and polish
+  
+  # Navigation
+  go_router: ^16.3.0 # For the routing table we designed (FIXED)
+  
+  # Utility
+  shared_preferences: ^2.2.3 # To save the user's theme choice
+  intl: ^0.19.0 # For formatting dates (e.g., in the Planner)
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.11 # Needed for Riverpod generators
+  riverpod_generator: ^2.4.2 # Needed for Riverpod generators
+
+flutter:
+  uses-material-design: true
+  # We will add assets (like a logo) here later
+  # assets:
+  #   - assets/images/logo.png
+

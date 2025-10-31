@@ -1,0 +1,196 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:homely/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:homely/features/library/presentation/screens/library_screen.dart';
+import 'package:homely/features/planner/presentation/screens/planner_screen.dart';
+import 'package:homely/features/settings/presentation/screens/settings_screen.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+
+class MainAppShell extends ConsumerStatefulWidget {
+  const MainAppShell({super.key});
+
+  @override
+  ConsumerState<MainAppShell> createState() => _MainAppShellState();
+}
+
+class _MainAppShellState extends ConsumerState<MainAppShell> {
+  int _selectedIndex = 0;
+
+  // The list of screens to navigate between
+  // NOW 4 screens, including Settings
+  static const List<Widget> _widgetOptions = [
+    DashboardScreen(),
+    PlannerScreen(),
+    LibraryScreen(),
+    SettingsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  void _onFabPressed() {
+    // As per design doc, this opens the "Quick Add" modal
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows modal to be taller
+      builder: (context) {
+        // TODO: Build the "Quick Add" modal widget
+        return Container(
+          padding: const EdgeInsets.all(24),
+          height: 250,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Quick Add',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                leading: const Icon(EvaIcons.creditCardOutline),
+                title: const Text('Add Expense'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: Navigate to Add Expense flow
+                },
+              ),
+              ListTile(
+                leading: const Icon(EvaIcons.clipboardOutline),
+                title: const Text('Add Task'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: Navigate to Add Task flow
+                },
+              ),
+              ListTile(
+                leading: const Icon(EvaIcons.shoppingCartOutline),
+                title: const Text('Add to Shopping List'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: Navigate to Add Shopping Item flow
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContextF) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      // extendBody allows the body to go behind the notched BottomAppBar
+      extendBody: true,
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _onFabPressed,
+        child: const Icon(EvaIcons.plus),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // Replaced NavigationBar with BottomAppBar for the "notch"
+      bottomNavigationBar: BottomAppBar(
+        height: 65, // Increased height to accommodate icon + label
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8.0, // Space around the FAB
+        child: Row(
+          // Icons are now evenly spaced, with a gap in the middle for the FAB
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            _buildNavItem(
+              // Use filled icon for selected, outlined for unselected
+              icon: _selectedIndex == 0
+                  ? EvaIcons.home
+                  : EvaIcons.homeOutline,
+              label: 'Dashboard',
+              index: 0,
+              theme: theme,
+            ),
+            _buildNavItem(
+              // Use filled icon for selected, outlined for unselected
+              icon: _selectedIndex == 1
+                  ? EvaIcons.calendar
+                  : EvaIcons.calendarOutline,
+              label: 'Planner',
+              index: 1,
+              theme: theme,
+            ),
+            // This is the empty space for the FAB notch
+            const SizedBox(width: 48),
+            _buildNavItem(
+              // Use filled icon for selected, outlined for unselected
+              icon: _selectedIndex == 2
+                  ? EvaIcons.book
+                  : EvaIcons.bookOutline,
+              label: 'Library',
+              index: 2,
+              theme: theme,
+            ),
+            _buildNavItem(
+              // Use filled icon for selected, outlined for unselected
+              icon: _selectedIndex == 3
+                  ? EvaIcons.settings
+                  : EvaIcons.settingsOutline,
+              label: 'Settings',
+              index: 3,
+              theme: theme,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper widget to build a single nav item
+  Widget _buildNavItem({
+    required IconData icon,
+    required String label,
+    required int index,
+    required ThemeData theme,
+  }) {
+    // Check if this item is the currently selected one
+    final isSelected = _selectedIndex == index;
+    // Get the correct color from the theme
+    final color = isSelected
+        ? theme.colorScheme.primary // Selected = Primary (Red)
+        : theme.colorScheme.onSurface
+            .withOpacity(0.6); // Unselected = Neutral (60% Text Color)
+
+    return Expanded(
+      child: InkWell(
+        onTap: () => _onItemTapped(index),
+        // Make the ripple effect circular
+        borderRadius: BorderRadius.circular(100),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon,
+                  color: color, size: 26), // Increased size for more prominence
+              const SizedBox(height: 1),
+              Text(
+                label,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontSize: 10,
+                  color: color, // Use the same color as the icon
+                  height: 0.9,
+                  fontWeight: FontWeight.w600, // Make text more bold
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
