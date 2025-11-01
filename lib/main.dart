@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homely/features/auth/presentation/auth_gate.dart';
-// TODO: Import your Firebase options file
-import 'firebase_options.dart';
-// import 'package:firebase_core/firebase_core.dart';
+
+// --- Import Firebase options ---
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart'; // Make sure you have generated this file
 
 // Import our new theme files
 import 'package:homely/core/app_theme.dart';
@@ -13,10 +14,10 @@ void main() async {
   // Ensure Flutter is ready
   WidgetsFlutterBinding.ensureInitialized();
 
-  // TODO: Initialize Firebase
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  // --- Initialize Firebase ---
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Run the app, wrapped in Riverpod's ProviderScope
   runApp(
@@ -58,6 +59,7 @@ class HomelyApp extends ConsumerWidget {
       darkTheme: darkTheme,
       themeMode: themeSettings.mode,
 
+      // AuthGate will now handle showing WelcomeScreen or MainAppShell
       home: const AuthGate(),
     );
   }

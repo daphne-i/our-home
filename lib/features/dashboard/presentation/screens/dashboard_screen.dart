@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:homely/core/app_theme.dart';
+// --- Settings button is no longer needed here ---
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -10,15 +11,21 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Good Morning!'),
+        // --- UPDATED: Removed the redundant actions button ---
+        // actions: [ ... ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        // Use padding from theme for consistency
+        padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
         children: const [
-          Text(
-            'Dashboard Screen',
-            style: TextStyle(fontSize: 24),
-          ),
           // We will build the Dashboard Cards here in Phase 2
+          // Example of using the CardTheme from app_theme.dart
+          Card(
+            child: Padding(
+              padding: EdgeInsets.all(AppTheme.spacingMedium),
+              child: Text('Dashboard Content Goes Here'),
+            ),
+          ),
         ],
       ),
     );

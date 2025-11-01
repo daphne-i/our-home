@@ -99,7 +99,7 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
   }
 
   @override
-  Widget build(BuildContextF) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// --- Import Firebase User ---
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:homely/features/auth/providers/auth_providers.dart';
-import 'package:homely/features/auth/presentation/screens/login_screen.dart';
+// --- Import WelcomeScreen ---
+import 'package:homely/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:homely/main_app_shell.dart';
 
 class AuthGate extends ConsumerWidget {
@@ -14,14 +17,16 @@ class AuthGate extends ConsumerWidget {
 
     // Use pattern matching on the AsyncValue
     return authState.when(
-      data: (user) {
+      // --- Listen for User? from Firebase ---
+      data: (User? user) {
         // If user is not null (logged in), show the main app
         if (user != null) {
+          // TODO: Add household check here in Phase 1.5
           return const MainAppShell();
         }
-        // If user is null (logged out), show the login screen
+        // If user is null (logged out), show the new WelcomeScreen
         else {
-          return const LoginScreen();
+          return const WelcomeScreen();
         }
       },
       loading: () {
