@@ -5,8 +5,9 @@ import 'package:homely/features/library/presentation/screens/library_screen.dart
 import 'package:homely/features/planner/presentation/screens/planner_screen.dart';
 import 'package:homely/features/settings/presentation/screens/settings_screen.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-// --- 1. IMPORT THE NEW ADD TASK MODAL ---
 import 'package:homely/features/tasks/presentation/screens/add_task_modal.dart';
+// --- 1. IMPORT THE NEW ADD EXPENSE MODAL ---
+import 'package:homely/features/finance/presentation/screens/add_expense_modal.dart';
 
 class MainAppShell extends ConsumerStatefulWidget {
   const MainAppShell({super.key});
@@ -68,30 +69,13 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
                       leading: const Icon(EvaIcons.creditCardOutline),
                       title: const Text('Add Expense'),
                       onTap: () {
-                        Navigator.pop(context);
-                        // TODO: Navigate to Add Expense flow
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content:
-                                    Text('Add Expense feature coming soon!')));
-                      },
-                    ),
-                    ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-                      leading: const Icon(EvaIcons.clipboardOutline),
-                      title: const Text('Add Task'),
-                      onTap: () {
                         // --- 2. UPDATE THE ONTAP TO SHOW THE NEW MODAL ---
                         Navigator.pop(context); // Close the "Quick Add" menu
                         showModalBottomSheet(
                           context: context,
-                          // isScrollControlled allows the modal to be taller
-                          // and to move up with the keyboard
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
                           builder: (context) {
-                            // We re-use the same wrapper as the "Quick Add"
-                            // menu for consistent styling.
                             return Container(
                               margin:
                                   const EdgeInsets.symmetric(horizontal: 16),
@@ -100,14 +84,41 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
                                 borderRadius: const BorderRadius.vertical(
                                     top: Radius.circular(20)),
                               ),
-                              // The AddTaskModal is now just the content
-                              child: const AddTaskModal(),
+                              child: const AddExpenseModal(),
                             );
                           },
                         );
                         // ----------------------------------------
                       },
                     ),
+                    // --- 3. RE-ADD THE "ADD TASK" LISTTILE ---
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                      leading: const Icon(EvaIcons.clipboardOutline),
+                      title: const Text('Add Task'),
+                      onTap: () {
+                        Navigator.pop(context); // Close the "Quick Add" menu
+                        // Show the AddTaskModal
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) {
+                            return Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface,
+                                borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(20)),
+                              ),
+                              child: const AddTaskModal(),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    // ------------------------------------
                     ListTile(
                       contentPadding: const EdgeInsets.symmetric(horizontal: 0),
                       leading: const Icon(EvaIcons.shoppingCartOutline),
