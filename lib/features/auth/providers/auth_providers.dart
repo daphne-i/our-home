@@ -9,7 +9,6 @@ final authStateProvider = StreamProvider<User?>((ref) {
   return FirebaseAuth.instance.authStateChanges();
 });
 
-// --- NEW ---
 // This provider streams the user's *data document* from Firestore.
 // This is how we'll know if they have a householdId.
 final userProvider = StreamProvider.family<UserModel?, String>((ref, uid) {
@@ -18,30 +17,23 @@ final userProvider = StreamProvider.family<UserModel?, String>((ref, uid) {
   // Listen to the document at /users/{uid}
   final docStream = firestore.collection('users').doc(uid).snapshots();
 
-  // Map the document snapshot to our UserModel
+  // Map the document snapshot to our UserModel with error handling
   return docStream.map((doc) {
     if (doc.exists) {
       return UserModel.fromFirestore(doc);
     }
     return null; // User document doesn't exist (this is bad!)
+  }).handleError((error) {
+    // Handle permission errors gracefully during auth timing issues
+    print('Error loading user document: $error');
+    return null;
   });
 });
 
-// --- NEW ---
-// This is a simple provider to get the current user's householdId
-// It depends on the other two providers.
-final householdIdProvider = Provider<String?>((ref) {
-  // Get the Firebase Auth user
-  final authUser = ref.watch(authStateProvider).value;
-  if (authUser == null) {
-    return null; // Not logged in
-  }
-
-  // Get the Firestore user document
-  final userModel = ref.watch(userProvider(authUser.uid)).value;
-
-  return userModel?.householdId; // Returns the ID, or null if none
-});
+// --- UPDATED: No longer needed, as the new household provider has a better one ---
+// final householdIdProvider = Provider<String?>((ref) {
+// ...
+// });
 
 // This is a state notifier provider for our AuthService.
 // The UI will call methods on this to log in, log out, or sign up.

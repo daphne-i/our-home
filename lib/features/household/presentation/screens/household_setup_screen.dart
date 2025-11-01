@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// --- NEW: Import the new screens ---
+import 'package:homely/features/household/presentation/screens/household_create_screen.dart';
+import 'package:homely/features/household/presentation/screens/household_join_screen.dart';
 
 // This is Screen 4 from the design document
 class HouseholdSetupScreen extends ConsumerWidget {
@@ -9,27 +12,19 @@ class HouseholdSetupScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
+    // --- UPDATED: Navigate to Screen 5 ---
     void createHousehold() {
-      // TODO: Implement Create Household (Screen 5)
-      print('Navigate to Create Household flow');
-      // Temporary: Show a snackbar for now
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Create Household feature coming soon!'),
-          duration: Duration(seconds: 2),
-        ),
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const CreateHouseholdScreen()),
       );
     }
 
+    // --- UPDATED: Navigate to Screen 6 ---
     void joinHousehold() {
-      // TODO: Implement Join Household (Screen 6)
-      print('Navigate to Join Household flow');
-      // Temporary: Show a snackbar for now
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Join Household feature coming soon!'),
-          duration: Duration(seconds: 2),
-        ),
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const JoinHouseholdScreen()),
       );
     }
 
@@ -59,7 +54,7 @@ class HouseholdSetupScreen extends ConsumerWidget {
 
             // "Create a New Household" button (Screen 4)
             FilledButton(
-              onPressed: createHousehold,
+              onPressed: createHousehold, // --- UPDATED ---
               child: const Text('CREATE A NEW HOUSEHOLD'),
             ),
             const SizedBox(height: 16),
@@ -67,7 +62,7 @@ class HouseholdSetupScreen extends ConsumerWidget {
             // "Join an Existing Household" button (Screen 4)
             FilledButton.tonal(
               // Use tonal for secondary action
-              onPressed: joinHousehold,
+              onPressed: joinHousehold, // --- UPDATED ---
               child: const Text('JOIN AN EXISTING HOUSEHOLD'),
             ),
           ],

@@ -41,8 +41,16 @@ class AuthGate extends ConsumerWidget {
           // 2A. Loading the user's Firestore document
           loading: () => const _LoadingScreen(),
 
-          // 2B. Error loading Firestore document
-          error: (err, stack) => _ErrorScreen(err.toString()),
+          // 2B. Error loading Firestore document - handle permission errors
+          error: (err, stack) {
+            // If it's a permission error, treat as missing document
+            final errorString = err.toString().toLowerCase();
+            if (errorString.contains('permission') ||
+                errorString.contains('denied')) {
+              return _CreateMissingUserDocument(firebaseUser: firebaseUser);
+            }
+            return _ErrorScreen(err.toString());
+          },
 
           // 2C. We have the Firestore document (or null)
           data: (UserModel? userModel) {
