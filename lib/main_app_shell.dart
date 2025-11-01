@@ -5,9 +5,10 @@ import 'package:homely/features/library/presentation/screens/library_screen.dart
 import 'package:homely/features/planner/presentation/screens/planner_screen.dart';
 import 'package:homely/features/settings/presentation/screens/settings_screen.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+// --- 1. IMPORT MODALS ---
 import 'package:homely/features/tasks/presentation/screens/add_task_modal.dart';
-// --- 1. IMPORT THE NEW ADD EXPENSE MODAL ---
 import 'package:homely/features/finance/presentation/screens/add_expense_modal.dart';
+import 'package:homely/features/kitchen/presentation/screens/add_shopping_item_modal.dart';
 
 class MainAppShell extends ConsumerStatefulWidget {
   const MainAppShell({super.key});
@@ -69,67 +70,53 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
                       leading: const Icon(EvaIcons.creditCardOutline),
                       title: const Text('Add Expense'),
                       onTap: () {
-                        // --- 2. UPDATE THE ONTAP TO SHOW THE NEW MODAL ---
-                        Navigator.pop(context); // Close the "Quick Add" menu
+                        Navigator.pop(context); // Close the first modal
+                        // --- 2. OPEN ADD EXPENSE MODAL ---
                         showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
-                          builder: (context) {
-                            return Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface,
-                                borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(20)),
-                              ),
-                              child: const AddExpenseModal(),
-                            );
-                          },
+                          // --- FIX: Removed the wrapper Container ---
+                          // Let the modal style itself
+                          builder: (context) => const AddExpenseModal(),
                         );
-                        // ----------------------------------------
+                        // --- END ---
                       },
                     ),
-                    // --- 3. RE-ADD THE "ADD TASK" LISTTILE ---
                     ListTile(
                       contentPadding: const EdgeInsets.symmetric(horizontal: 0),
                       leading: const Icon(EvaIcons.clipboardOutline),
                       title: const Text('Add Task'),
                       onTap: () {
-                        Navigator.pop(context); // Close the "Quick Add" menu
-                        // Show the AddTaskModal
+                        Navigator.pop(context); // Close the first modal
+                        // --- 3. OPEN ADD TASK MODAL ---
                         showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
-                          builder: (context) {
-                            return Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface,
-                                borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(20)),
-                              ),
-                              child: const AddTaskModal(),
-                            );
-                          },
+                          // --- FIX: Removed the wrapper Container ---
+                          // Let the modal style itself
+                          builder: (context) => const AddTaskModal(),
                         );
+                        // --- END ---
                       },
                     ),
-                    // ------------------------------------
                     ListTile(
                       contentPadding: const EdgeInsets.symmetric(horizontal: 0),
                       leading: const Icon(EvaIcons.shoppingCartOutline),
                       title: const Text('Add to Shopping List'),
                       onTap: () {
-                        Navigator.pop(context);
-                        // TODO: Navigate to Add Shopping Item flow
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text(
-                                    'Add Shopping Item feature coming soon!')));
+                        Navigator.pop(context); // Close the first modal
+                        // --- 4. OPEN ADD SHOPPING ITEM MODAL ---
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          // --- FIX: Removed the wrapper Container ---
+                          // Your new modal styles itself
+                          builder: (context) => const AddShoppingItemModal(),
+                        );
+                        // --- END ---
                       },
                     ),
                   ],
