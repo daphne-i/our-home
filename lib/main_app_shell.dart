@@ -5,6 +5,8 @@ import 'package:homely/features/library/presentation/screens/library_screen.dart
 import 'package:homely/features/planner/presentation/screens/planner_screen.dart';
 import 'package:homely/features/settings/presentation/screens/settings_screen.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+// --- 1. IMPORT THE NEW ADD TASK MODAL ---
+import 'package:homely/features/tasks/presentation/screens/add_task_modal.dart';
 
 class MainAppShell extends ConsumerStatefulWidget {
   const MainAppShell({super.key});
@@ -68,6 +70,10 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
                       onTap: () {
                         Navigator.pop(context);
                         // TODO: Navigate to Add Expense flow
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text('Add Expense feature coming soon!')));
                       },
                     ),
                     ListTile(
@@ -75,8 +81,31 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
                       leading: const Icon(EvaIcons.clipboardOutline),
                       title: const Text('Add Task'),
                       onTap: () {
-                        Navigator.pop(context);
-                        // TODO: Navigate to Add Task flow
+                        // --- 2. UPDATE THE ONTAP TO SHOW THE NEW MODAL ---
+                        Navigator.pop(context); // Close the "Quick Add" menu
+                        showModalBottomSheet(
+                          context: context,
+                          // isScrollControlled allows the modal to be taller
+                          // and to move up with the keyboard
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) {
+                            // We re-use the same wrapper as the "Quick Add"
+                            // menu for consistent styling.
+                            return Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface,
+                                borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(20)),
+                              ),
+                              // The AddTaskModal is now just the content
+                              child: const AddTaskModal(),
+                            );
+                          },
+                        );
+                        // ----------------------------------------
                       },
                     ),
                     ListTile(
@@ -86,6 +115,10 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
                       onTap: () {
                         Navigator.pop(context);
                         // TODO: Navigate to Add Shopping Item flow
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Add Shopping Item feature coming soon!')));
                       },
                     ),
                   ],
@@ -182,7 +215,7 @@ class _MainAppShellState extends ConsumerState<MainAppShell> {
             height: 48, // Fixed height to maintain square shape
             decoration: isSelected
                 ? BoxDecoration(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                    color: theme.colorScheme.primary.withAlpha(12), // 0.05
                     borderRadius: BorderRadius.circular(20),
                   )
                 : null,
