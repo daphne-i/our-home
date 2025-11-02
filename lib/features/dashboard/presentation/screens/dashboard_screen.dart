@@ -4,10 +4,10 @@ import 'package:homely/core/app_theme.dart';
 import 'package:homely/features/tasks/providers/task_providers.dart';
 import 'package:homely/features/tasks/domain/task_model.dart';
 import 'package:homely/features/finance/providers/expense_provider.dart';
-// --- 1. IMPORT SHOPPING PROVIDERS ---
 import 'package:homely/features/kitchen/providers/shopping_list_providers.dart';
 import 'package:intl/intl.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:homely/features/kitchen/presentation/screens/view_shopping_list_modal.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -19,7 +19,6 @@ class DashboardScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Good Morning!'),
       ),
-      // --- 2. CHANGE BODY TO A Consumer WIDGET ---
       body: Consumer(
         builder: (context, ref, child) {
           // 3. WATCH ALL OUR PROVIDERS
@@ -99,29 +98,45 @@ class DashboardScreen extends StatelessWidget {
                 if (uncheckedItems == 0) {
                   return const SizedBox.shrink();
                 }
-                return Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                    // Simplified layout for a grid
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Shopping', // Shorter title
-                          style: Theme.of(context).textTheme.titleMedium,
+                // --- 2. WRAP CARD IN INKWELL ---
+                return InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
                         ),
-                        const SizedBox(height: AppTheme.spacingMedium),
-                        Icon(
-                          EvaIcons.shoppingCartOutline,
-                          color: Theme.of(context).colorScheme.primary,
-                          size: 32, // Large icon
-                        ),
-                        const SizedBox(height: AppTheme.spacingSmall),
-                        Text(
-                          '$uncheckedItems items', // Simpler text
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
+                      ),
+                      builder: (context) => const ViewShoppingListModal(),
+                    );
+                  },
+                  borderRadius: AppTheme.cardRadius,
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                      // Simplified layout for a grid
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Shopping', // Shorter title
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: AppTheme.spacingMedium),
+                          Icon(
+                            EvaIcons.shoppingCartOutline,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 32, // Large icon
+                          ),
+                          const SizedBox(height: AppTheme.spacingSmall),
+                          Text(
+                            '$uncheckedItems items', // Simpler text
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -135,8 +150,9 @@ class DashboardScreen extends StatelessWidget {
 
           // --- 5. USE A CUSTOMSCROLLVIEW FOR HYBRID LAYOUT ---
           return CustomScrollView(
+            // --- FIX: Removed padding parameter ---
             slivers: [
-              // --- SLIVER PADDING WRAPPER ---
+              // --- FIX: Added SliverPadding ---
               SliverPadding(
                 padding: const EdgeInsets.all(AppTheme.spacingSmall),
                 sliver: SliverGrid(
@@ -154,16 +170,18 @@ class DashboardScreen extends StatelessWidget {
               ),
 
               // --- 7. A SLIVERLIST FOR THE FULL-WIDTH TASK CARD ---
+              // --- FIX: Added SliverPadding ---
               SliverPadding(
-                padding: const EdgeInsets.all(AppTheme.spacingSmall),
+                padding: const EdgeInsets.fromLTRB(
+                  AppTheme.spacingSmall,
+                  0,
+                  AppTheme.spacingSmall,
+                  AppTheme.spacingSmall,
+                ),
                 sliver: SliverToBoxAdapter(
                   child: Card(
-                    // Add top margin only if there were grid cards
-                    margin: EdgeInsets.only(
-                      top: visibleGridCards.isNotEmpty
-                          ? AppTheme.spacingSmall
-                          : 0,
-                    ),
+                    // --- FIX: Removed extra margin ---
+                    margin: EdgeInsets.zero,
                     child: Padding(
                       padding: const EdgeInsets.all(AppTheme.spacingMedium),
                       child: Column(
@@ -220,7 +238,7 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-// --- 8. HELPER WIDGET FOR A SINGLE TASK TILE (Unchanged) ---
+// --- 8. HELPER WIDGET FOR A SINGLE TASK TILE (This was missing) ---
 class _TaskTile extends ConsumerWidget {
   final TaskModel task;
   const _TaskTile({required this.task});

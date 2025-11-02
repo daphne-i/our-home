@@ -7,7 +7,7 @@
         {
             "name": "our_home (Flutter flutter emulator)",
             "program": "lib/main.dart",
-            "deviceId": "emulator-5554",
+            "deviceId": "emulator-5556",
             "request": "launch",
             "type": "dart"
         }
