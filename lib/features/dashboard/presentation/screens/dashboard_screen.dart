@@ -10,7 +10,9 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:homely/features/kitchen/presentation/screens/view_shopping_list_modal.dart';
 
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+  final VoidCallback? onViewAllTasks;
+
+  const DashboardScreen({super.key, this.onViewAllTasks});
 
   @override
   Widget build(BuildContext context) {
@@ -187,9 +189,18 @@ class DashboardScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Tasks & Chores',
-                            style: Theme.of(context).textTheme.titleMedium,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Due Today',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              TextButton(
+                                onPressed: onViewAllTasks,
+                                child: const Text('View All'),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: AppTheme.spacingSmall),
                           // Use .when to handle loading/error/data states
@@ -207,18 +218,30 @@ class DashboardScreen extends StatelessWidget {
                               ),
                             ),
                             data: (tasks) {
+                              // Filter tasks to show only those due today
+                              final now = DateTime.now();
+                              final today =
+                                  DateTime(now.year, now.month, now.day);
+
+                              final todayTasks = tasks.where((task) {
+                                final taskDate = task.dueDate.toDate();
+                                final taskDateOnly = DateTime(taskDate.year,
+                                    taskDate.month, taskDate.day);
+                                return taskDateOnly.isAtSameMomentAs(today);
+                              }).toList();
+
                               // 5. CHECK IF LIST IS EMPTY
-                              if (tasks.isEmpty) {
+                              if (todayTasks.isEmpty) {
                                 return const Center(
                                   child: Padding(
                                     padding: EdgeInsets.all(16.0),
-                                    child: Text('No tasks due. Add one!'),
+                                    child: Text('No tasks due today!'),
                                   ),
                                 );
                               }
-                              // 6. DISPLAY THE LIST OF TASKS
+                              // 6. DISPLAY THE LIST OF TODAY'S TASKS
                               return Column(
-                                children: tasks
+                                children: todayTasks
                                     .map((task) => _TaskTile(task: task))
                                     .toList(),
                               );

@@ -20,20 +20,24 @@ class MainAppShell extends ConsumerStatefulWidget {
 class _MainAppShellState extends ConsumerState<MainAppShell> {
   int _selectedIndex = 0;
 
-  // The list of screens to navigate between
-  // NOW 4 screens, including Settings
-  static const List<Widget> _widgetOptions = [
-    DashboardScreen(),
-    PlannerScreen(),
-    LibraryScreen(),
-    SettingsScreen(),
-  ];
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
+
+  void _navigateToPlanner() {
+    _onItemTapped(1); // Navigate to Planner tab (index 1)
+  }
+
+  // The list of screens to navigate between
+  // NOW 4 screens, including Settings
+  List<Widget> get _widgetOptions => [
+        DashboardScreen(onViewAllTasks: _navigateToPlanner),
+        const PlannerScreen(),
+        const LibraryScreen(),
+        const SettingsScreen(),
+      ];
 
   void _onFabPressed() {
     // As per design doc, this opens the "Quick Add" modal
