@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:homely/core/app_theme.dart';
 import 'package:homely/features/finance/presentation/screens/finance_hub_screen.dart';
+import 'package:homely/features/kitchen/presentation/screens/pantry_list_screen.dart';
 // --- 1. IMPORT THE FULL-PAGE SHOPPING LIST SCREEN ---
 import 'package:homely/features/kitchen/presentation/screens/shopping_list_screen.dart';
 
@@ -61,9 +62,12 @@ class LibraryScreen extends StatelessWidget {
         title: 'Pantry',
         icon: EvaIcons.archiveOutline,
         onTap: () {
-          // TODO: Navigate to Pantry
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Pantry feature coming soon!')));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const PantryListScreen(),
+            ),
+          );
         },
       ),
       LibraryCategory(
