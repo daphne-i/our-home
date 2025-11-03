@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homely/core/providers/firestore_providers.dart';
 import 'package:homely/features/household/providers/household_providers.dart';
@@ -68,3 +69,31 @@ class MealPlanController extends StateNotifier<bool> {
     }
   }
 }
+
+final todaysDinnerProvider = Provider<MealPlanModel?>((ref) {
+  // Watch the main list of all meals
+  final allMeals = ref.watch(mealPlanProvider).valueOrNull;
+  if (allMeals == null) {
+    return null;
+  }
+
+  final now = DateTime.now();
+
+  // Helper to check if a Timestamp is "today"
+  bool isToday(Timestamp ts) {
+    final date = ts.toDate();
+    return date.day == now.day &&
+        date.month == now.month &&
+        date.year == now.year;
+  }
+
+  // Find the first meal that is "Dinner" and "Today"
+  try {
+    return allMeals.firstWhere(
+      (meal) => meal.mealType == 'Dinner' && isToday(meal.date),
+    );
+  } catch (e) {
+    // firstWhere throws an error if no element is found
+    return null;
+  }
+});

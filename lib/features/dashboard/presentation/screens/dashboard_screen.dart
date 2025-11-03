@@ -9,32 +9,37 @@ import 'package:intl/intl.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:homely/features/kitchen/presentation/screens/view_shopping_list_modal.dart';
 
-class DashboardScreen extends StatelessWidget {
-  final VoidCallback? onViewAllTasks;
+// --- 1. IMPORT MEAL PLAN PROVIDER & MODEL ---
+import 'package:homely/features/kitchen/providers/meal_plan_providers.dart';
+import 'package:homely/features/kitchen/models/meal_plan_model.dart';
 
-  const DashboardScreen({super.key, this.onViewAllTasks});
+// --- UPDATE THE DASHBOARD WIDGET ---
+class DashboardScreen extends StatelessWidget {
+  // Add this to accept the navigation callback from main_app_shell
+  final VoidCallback onViewAllTasks;
+
+  const DashboardScreen({super.key, required this.onViewAllTasks});
 
   @override
   Widget build(BuildContext context) {
-    // This is the main "Dashboard" screen (Tab 0)
     return Scaffold(
       appBar: AppBar(
         title: const Text('Good Morning!'),
       ),
       body: Consumer(
         builder: (context, ref, child) {
-          // 3. WATCH ALL OUR PROVIDERS
           final tasksAsync = ref.watch(taskListProvider);
           final monthlySpending = ref.watch(monthlySpendingProvider);
           final shoppingListAsync = ref.watch(shoppingListProvider);
           final currencyFormat =
               NumberFormat.currency(locale: 'en_IN', symbol: '₹');
-          // TODO: Load this from household settings in the future
-          const monthlyBudget = 20000.00;
+          const monthlyBudget = 20000.00; // TODO: Load from household
 
-          // --- 4. PREPARE THE GRID CARDS ---
+          // --- 2. WATCH THE NEW DINNER PROVIDER ---
+          final todaysDinner = ref.watch(todaysDinnerProvider);
+
           final List<Widget> gridCards = [
-            // --- CARD 1: FINANCE ---
+            // --- CARD 1: FINANCE (Existing) ---
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(AppTheme.spacingMedium),
@@ -42,7 +47,7 @@ class DashboardScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Spending', // Shorter title for grid
+                      'Spending',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
@@ -57,7 +62,7 @@ class DashboardScreen extends StatelessWidget {
                               .displayLarge
                               ?.copyWith(
                                 color: Theme.of(context).colorScheme.primary,
-                                fontSize: 24, // Smaller for grid
+                                fontSize: 24,
                               ),
                         ),
                       ],
@@ -78,7 +83,7 @@ class DashboardScreen extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value:
                             (monthlySpending / monthlyBudget).clamp(0.0, 1.0),
-                        minHeight: 8, // Thinner for grid
+                        minHeight: 8,
                         backgroundColor:
                             Theme.of(context).colorScheme.surfaceContainer,
                       ),
@@ -88,19 +93,57 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
 
-            // --- CARD 2: SHOPPING LIST ---
+            // --- 3. ADD MEAL PLANNER CARD [cite: 63-64] ---
+            if (todaysDinner != null) // Only show the card if dinner is planned
+              InkWell(
+                onTap: () {
+                  // TODO: Navigate to Recipe Detail Screen [cite: 64]
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Recipe details coming soon!')),
+                  );
+                },
+                borderRadius: AppTheme.cardRadius,
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Tonight's Dinner",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: AppTheme.spacingMedium),
+                        Icon(
+                          EvaIcons.bellOutline, // Icon from Planner
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 32,
+                        ),
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        Text(
+                          todaysDinner.recipeName, // The recipe name!
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            // --- END OF NEW CARD ---
+
+            // --- CARD 4: SHOPPING LIST (Existing) ---
             shoppingListAsync.when(
-              loading: () =>
-                  const SizedBox.shrink(), // Don't show card if loading
-              error: (err, stack) => const SizedBox.shrink(), // Or if error
+              loading: () => const SizedBox.shrink(),
+              error: (err, stack) => const SizedBox.shrink(),
               data: (items) {
                 final uncheckedItems =
                     items.where((item) => !item.isChecked).length;
-                // Only show the card if there are items on the list
                 if (uncheckedItems == 0) {
                   return const SizedBox.shrink();
                 }
-                // --- 2. WRAP CARD IN INKWELL ---
                 return InkWell(
                   onTap: () {
                     showModalBottomSheet(
@@ -118,23 +161,22 @@ class DashboardScreen extends StatelessWidget {
                   child: Card(
                     child: Padding(
                       padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                      // Simplified layout for a grid
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Shopping', // Shorter title
+                            'Shopping',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: AppTheme.spacingMedium),
                           Icon(
                             EvaIcons.shoppingCartOutline,
                             color: Theme.of(context).colorScheme.primary,
-                            size: 32, // Large icon
+                            size: 32,
                           ),
                           const SizedBox(height: AppTheme.spacingSmall),
                           Text(
-                            '$uncheckedItems items', // Simpler text
+                            '$uncheckedItems items',
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ],
@@ -146,23 +188,20 @@ class DashboardScreen extends StatelessWidget {
             ),
           ];
 
-          // Filter out any empty SizedBox widgets
+          // Filter out any nulls or SizedBox widgets
           final visibleGridCards =
-              gridCards.where((card) => card is! SizedBox).toList();
+              gridCards.whereType<Widget>().toList(); // Simpler filter
 
-          // --- 5. USE A CUSTOMSCROLLVIEW FOR HYBRID LAYOUT ---
           return CustomScrollView(
-            // --- FIX: Removed padding parameter ---
             slivers: [
-              // --- FIX: Added SliverPadding ---
               SliverPadding(
                 padding: const EdgeInsets.all(AppTheme.spacingSmall),
                 sliver: SliverGrid(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, // Two columns
+                    crossAxisCount: 2,
                     mainAxisSpacing: AppTheme.spacingSmall,
                     crossAxisSpacing: AppTheme.spacingSmall,
-                    childAspectRatio: 1.1, // Aspect ratio for grid items
+                    childAspectRatio: 1.1,
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (context, index) => visibleGridCards[index],
@@ -171,8 +210,7 @@ class DashboardScreen extends StatelessWidget {
                 ),
               ),
 
-              // --- 7. A SLIVERLIST FOR THE FULL-WIDTH TASK CARD ---
-              // --- FIX: Added SliverPadding ---
+              // --- TASK CARD (Existing, but with update) ---
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(
                   AppTheme.spacingSmall,
@@ -182,28 +220,27 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 sliver: SliverToBoxAdapter(
                   child: Card(
-                    // --- FIX: Removed extra margin ---
                     margin: EdgeInsets.zero,
                     child: Padding(
                       padding: const EdgeInsets.all(AppTheme.spacingMedium),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // --- 4. ADD "VIEW ALL" BUTTON ---
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Due Today',
+                                'Tasks & Chores',
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                               TextButton(
-                                onPressed: onViewAllTasks,
+                                onPressed: onViewAllTasks, // Use the callback
                                 child: const Text('View All'),
                               ),
                             ],
                           ),
                           const SizedBox(height: AppTheme.spacingSmall),
-                          // Use .when to handle loading/error/data states
                           tasksAsync.when(
                             loading: () => const Center(
                               child: Padding(
@@ -218,20 +255,18 @@ class DashboardScreen extends StatelessWidget {
                               ),
                             ),
                             data: (tasks) {
-                              // Filter tasks to show only those due today
+                              // --- 5. FILTER TASKS FOR "TODAY" ---
                               final now = DateTime.now();
-                              final today =
-                                  DateTime(now.year, now.month, now.day);
-
-                              final todayTasks = tasks.where((task) {
-                                final taskDate = task.dueDate.toDate();
-                                final taskDateOnly = DateTime(taskDate.year,
-                                    taskDate.month, taskDate.day);
-                                return taskDateOnly.isAtSameMomentAs(today);
+                              final tasksToday = tasks.where((task) {
+                                final dueDate = task.dueDate.toDate();
+                                return !task.isComplete &&
+                                    (dueDate.day == now.day &&
+                                        dueDate.month == now.month &&
+                                        dueDate.year == now.year);
                               }).toList();
+                              // --- END OF FILTER ---
 
-                              // 5. CHECK IF LIST IS EMPTY
-                              if (todayTasks.isEmpty) {
+                              if (tasksToday.isEmpty) {
                                 return const Center(
                                   child: Padding(
                                     padding: EdgeInsets.all(16.0),
@@ -239,9 +274,8 @@ class DashboardScreen extends StatelessWidget {
                                   ),
                                 );
                               }
-                              // 6. DISPLAY THE LIST OF TODAY'S TASKS
                               return Column(
-                                children: todayTasks
+                                children: tasksToday
                                     .map((task) => _TaskTile(task: task))
                                     .toList(),
                               );
@@ -261,7 +295,7 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-// --- 8. HELPER WIDGET FOR A SINGLE TASK TILE (This was missing) ---
+// --- (TaskTile widget is unchanged) ---
 class _TaskTile extends ConsumerWidget {
   final TaskModel task;
   const _TaskTile({required this.task});
@@ -290,9 +324,11 @@ class _TaskTile extends ConsumerWidget {
     }
 
     String subtitleText = dueDate;
-    if (task.assignedTo != null && task.assignedTo!.isNotEmpty) {
-      subtitleText += " • ${task.assignedTo}";
+    // --- 6. UPDATE SUBTITLE TO SHOW TASK TYPE ---
+    if (task.type != 'Task') {
+      subtitleText += " • ${task.type}"; // e.g., "Today • Bill"
     }
+    // --- END OF CHANGE ---
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
@@ -305,7 +341,6 @@ class _TaskTile extends ConsumerWidget {
           width: 2,
         ),
         onChanged: (bool? value) {
-          // Toggle the task's completion status
           ref.read(taskControllerProvider.notifier).toggleTaskStatus(task);
         },
       ),
@@ -335,7 +370,6 @@ class _TaskTile extends ConsumerWidget {
           color: theme.colorScheme.error,
         ),
         onPressed: () {
-          // Delete the task
           ref.read(taskControllerProvider.notifier).deleteTask(task);
         },
       ),
