@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:homely/features/auth/application/auth_service.dart';
-import 'package:homely/core/providers/theme_provider.dart'; // From your main.dart
-
-// --- 1. IMPORT THE NEW SCREEN ---
+import 'package:homely/core/providers/theme_provider.dart';
 import 'package:homely/features/household/presentation/screens/household_settings_screen.dart';
-// TODO: Import Theme settings screen
+
+// --- 1. IMPORT THE NEW THEME SCREEN ---
+import 'package:homely/features/settings/presentation/screens/theme_settings_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -47,7 +47,6 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Household'),
             trailing: const Icon(EvaIcons.arrowIosForwardOutline),
             onTap: () {
-              // --- 2. ADD NAVIGATION ---
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -61,8 +60,13 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Theme'),
             trailing: const Icon(EvaIcons.arrowIosForwardOutline),
             onTap: () {
-              // TODO: Navigate to Theme Settings Screen
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => const ThemeSettingsScreen()));
+              // --- 2. ADD NAVIGATION HERE ---
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ThemeSettingsScreen(),
+                ),
+              );
             },
           ),
           ListTile(
