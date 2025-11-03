@@ -3,6 +3,7 @@ import 'package:homely/core/providers/firestore_providers.dart';
 import 'package:homely/features/auth/providers/auth_providers.dart';
 import 'package:homely/features/finance/data/expense_service.dart';
 import 'package:homely/features/finance/models/expense_model.dart';
+import 'package:homely/features/finance/models/subscription_model.dart';
 import 'package:homely/features/household/providers/household_providers.dart';
 
 // Provider for the ExpenseService
@@ -92,4 +93,15 @@ final monthlySpendingProvider = Provider<double>((ref) {
     }
   }
   return total;
+});
+// --- 2. ADD PROVIDER FOR SUBSCRIPTIONS ---
+final subscriptionListProvider = StreamProvider<List<SubscriptionModel>>((ref) {
+  final userModel = ref.watch(currentUserModelProvider);
+  final householdId = userModel?.householdId;
+
+  if (householdId == null) {
+    return Stream.value([]);
+  }
+
+  return ref.watch(expenseServiceProvider).getSubscriptionsStream(householdId);
 });
