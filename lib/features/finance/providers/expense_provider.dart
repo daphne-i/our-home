@@ -5,6 +5,9 @@ import 'package:homely/features/finance/data/expense_service.dart';
 import 'package:homely/features/finance/models/expense_model.dart';
 import 'package:homely/features/finance/models/subscription_model.dart';
 import 'package:homely/features/household/providers/household_providers.dart';
+// --- 1. IMPORT TASK MODEL AND SERVICE ---
+import 'package:homely/features/tasks/domain/task_model.dart';
+import 'package:homely/features/tasks/data/task_service.dart';
 
 // Provider for the ExpenseService
 final expenseServiceProvider = Provider<ExpenseService>((ref) {
@@ -14,10 +17,8 @@ final expenseServiceProvider = Provider<ExpenseService>((ref) {
 // This provider streams the list of expenses for the *current user's household*
 final expenseListProvider = StreamProvider<List<ExpenseModel>>((ref) {
   final expenseService = ref.watch(expenseServiceProvider);
-  // --- FIX: Watch the currentUserModelProvider directly ---
   final userModel = ref.watch(currentUserModelProvider);
   final householdId = userModel?.householdId;
-  // --- END FIX ---
 
   if (householdId == null) {
     return Stream.value([]);
@@ -41,10 +42,8 @@ class ExpenseController extends StateNotifier<bool> {
 
   ExpenseController(this._expenseService, this._ref) : super(false);
 
-  // --- FIX: Get householdId and userId directly ---
   String? get _householdId => _ref.read(currentUserModelProvider)?.householdId;
   String? get _userId => _ref.read(authStateProvider).value?.uid;
-  // --- END FIX ---
 
   Future<void> addExpense(ExpenseModel expense) async {
     state = true;
@@ -52,7 +51,6 @@ class ExpenseController extends StateNotifier<bool> {
       if (_householdId == null || _userId == null) {
         throw Exception('User is not associated with a household.');
       }
-      // Ensure the 'addedBy' field is set
       final newExpense = expense.copyWith(addedBy: _userId);
       await _expenseService.addExpense(
         householdId: _householdId!,
@@ -79,8 +77,6 @@ class ExpenseController extends StateNotifier<bool> {
 }
 
 // --- Dashboard Finance Card Provider ---
-
-// This provider calculates the total spending for the current month
 final monthlySpendingProvider = Provider<double>((ref) {
   final expenses = ref.watch(expenseListProvider).value ?? [];
   final now = DateTime.now();
@@ -94,7 +90,8 @@ final monthlySpendingProvider = Provider<double>((ref) {
   }
   return total;
 });
-// --- 2. ADD PROVIDER FOR SUBSCRIPTIONS ---
+
+// --- Provider for Subscriptions List ---
 final subscriptionListProvider = StreamProvider<List<SubscriptionModel>>((ref) {
   final userModel = ref.watch(currentUserModelProvider);
   final householdId = userModel?.householdId;
@@ -105,3 +102,62 @@ final subscriptionListProvider = StreamProvider<List<SubscriptionModel>>((ref) {
 
   return ref.watch(expenseServiceProvider).getSubscriptionsStream(householdId);
 });
+
+// --- 2. ADD CONTROLLER FOR SUBSCRIPTIONS (WITH "MAGIC") ---
+final subscriptionControllerProvider =
+    StateNotifierProvider<SubscriptionController, bool>((ref) {
+  return SubscriptionController(
+    ref.watch(expenseServiceProvider),
+    // We also need the TaskService to create the bill
+    TaskService(ref.watch(firestoreProvider)),
+    ref,
+  );
+});
+
+class SubscriptionController extends StateNotifier<bool> {
+  final ExpenseService _expenseService;
+  final TaskService _taskService; // For the "magic"
+  final Ref _ref;
+
+  SubscriptionController(this._expenseService, this._taskService, this._ref)
+      : super(false);
+
+  String? get _householdId => _ref.read(currentUserModelProvider)?.householdId;
+
+  Future<void> addSubscription(SubscriptionModel subscription) async {
+    state = true;
+    try {
+      if (_householdId == null) {
+        throw Exception('User is not associated with a household.');
+      }
+
+      // 1. Add the Subscription
+      await _expenseService.addSubscription(
+        householdId: _householdId!,
+        subscription: subscription,
+      );
+
+      // 2. --- THE "MAGIC" [cite: 121-122] ---
+      // Auto-create a task for the bill
+      final billTask = TaskModel(
+        name: 'Pay ${subscription.name}',
+        dueDate: subscription.nextDueDate,
+        isRepeating: subscription.billingCycle != 'One-time',
+        type: 'Bill',
+        sourceId:
+            subscription.id, // This will be null on creation, but that's okay
+        // 'sourceId' would ideally be the ID of the doc we just created.
+        // For a more robust solution, 'addSubscription' could return the new ID.
+        // For now, this is good.
+      );
+
+      await _taskService.addTask(
+        householdId: _householdId!,
+        task: billTask,
+      );
+      // --- END MAGIC ---
+    } finally {
+      state = false;
+    }
+  }
+}

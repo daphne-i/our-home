@@ -116,94 +116,103 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
   Widget build(BuildContext context) {
     final isLoading = ref.watch(expenseControllerProvider);
 
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Add an Expense',
-                  style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(height: 16),
-              // --- Amount Field ---
-              TextFormField(
-                controller: _amountController,
-                decoration: const InputDecoration(
-                  labelText: 'Amount',
-                  prefixText: '₹',
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Add an Expense',
+                    style: Theme.of(context).textTheme.headlineMedium),
+                const SizedBox(height: 16),
+                // --- Amount Field ---
+                TextFormField(
+                  controller: _amountController,
+                  decoration: const InputDecoration(
+                    labelText: 'Amount',
+                    prefixText: '₹',
+                  ),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^\d+\.?\d{0,2}')),
+                  ],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter an amount';
+                    }
+                    if (double.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
                 ),
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-                ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an amount';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Please enter a valid number';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              // --- Category Field ---
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                decoration: const InputDecoration(labelText: 'Category'),
-                hint: const Text('Select a category'),
-                items: _categories
-                    .map((category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(category),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value;
-                  });
-                },
-                validator: (value) =>
-                    value == null ? 'Please select a category' : null,
-              ),
-              const SizedBox(height: 16),
-              // --- Date Field ---
-              TextFormField(
-                controller: _dateController,
-                readOnly: true,
-                decoration: const InputDecoration(
-                  labelText: 'Date',
-                  suffixIcon: Icon(EvaIcons.calendarOutline),
+                const SizedBox(height: 16),
+                // --- Category Field ---
+                DropdownButtonFormField<String>(
+                  value: _selectedCategory,
+                  decoration: const InputDecoration(labelText: 'Category'),
+                  hint: const Text('Select a category'),
+                  items: _categories
+                      .map((category) => DropdownMenuItem(
+                            value: category,
+                            child: Text(category),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  },
+                  validator: (value) =>
+                      value == null ? 'Please select a category' : null,
                 ),
-                onTap: () => _pickDate(context),
-              ),
-              const SizedBox(height: 16),
-              // --- Notes Field ---
-              TextFormField(
-                controller: _notesController,
-                decoration:
-                    const InputDecoration(labelText: 'Notes (Optional)'),
-                textCapitalization: TextCapitalization.sentences,
-              ),
-              const SizedBox(height: 32),
-              // --- Save Button ---
-              FilledButton(
-                onPressed: isLoading ? null : _saveExpense,
-                child: isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('SAVE EXPENSE'),
-              ),
-              // Add bottom padding to push content up when keyboard appears
-              SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
-            ],
+                const SizedBox(height: 16),
+                // --- Date Field ---
+                TextFormField(
+                  controller: _dateController,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Date',
+                    suffixIcon: Icon(EvaIcons.calendarOutline),
+                  ),
+                  onTap: () => _pickDate(context),
+                ),
+                const SizedBox(height: 16),
+                // --- Notes Field ---
+                TextFormField(
+                  controller: _notesController,
+                  decoration:
+                      const InputDecoration(labelText: 'Notes (Optional)'),
+                  textCapitalization: TextCapitalization.sentences,
+                ),
+                const SizedBox(height: 32),
+                // --- Save Button ---
+                FilledButton(
+                  onPressed: isLoading ? null : _saveExpense,
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('SAVE EXPENSE'),
+                ),
+                // Add bottom padding to push content up when keyboard appears
+                SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
+              ],
+            ),
           ),
         ),
       ),

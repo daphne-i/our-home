@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homely/features/finance/providers/expense_provider.dart';
 import 'package:intl/intl.dart';
-// TODO: Import 'add_subscription_modal.dart' when created
+// --- 1. IMPORT THE NEW MODAL ---
+import 'package:homely/features/finance/presentation/screens/add_subscription_modal.dart';
 
 class FinanceHubScreen extends ConsumerStatefulWidget {
   const FinanceHubScreen({super.key});
@@ -43,22 +44,19 @@ class _FinanceHubScreenState extends ConsumerState<FinanceHubScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          // --- Transactions Tab ---
           _TransactionsList(),
-          // --- Subscriptions Tab ---
           _SubscriptionsList(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Implement this in the next step
-          // showModalBottomSheet(
-          //   context: context,
-          //   isScrollControlled: true,
-          //   builder: (context) => const AddSubscriptionModal(),
-          // );
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Add Subscription coming next!')));
+          // --- 2. SHOW THE MODAL ---
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent, // Let modal style itself
+            builder: (context) => const AddSubscriptionModal(),
+          );
         },
         child: const Icon(Icons.add),
       ),
@@ -66,7 +64,8 @@ class _FinanceHubScreenState extends ConsumerState<FinanceHubScreen>
   }
 }
 
-// --- WIDGET FOR TRANSACTIONS (EXPENSES) LIST ---
+// --- (Rest of the file: _TransactionsList and _SubscriptionsList widgets) ---
+// (No changes needed to the list widgets below)
 class _TransactionsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -106,7 +105,6 @@ class _TransactionsList extends ConsumerWidget {
   }
 }
 
-// --- WIDGET FOR SUBSCRIPTIONS LIST ---
 class _SubscriptionsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
