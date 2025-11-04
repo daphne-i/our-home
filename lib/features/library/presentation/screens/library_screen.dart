@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:homely/core/app_theme.dart';
+import 'package:homely/features/kitchen/presentation/screens/shopping_list_screen.dart';
 import 'package:homely/features/finance/presentation/screens/finance_hub_screen.dart';
 import 'package:homely/features/kitchen/presentation/screens/pantry_list_screen.dart';
-// --- 1. IMPORT THE FULL-PAGE SHOPPING LIST SCREEN ---
-import 'package:homely/features/kitchen/presentation/screens/shopping_list_screen.dart';
 
-// --- 2. DEFINE THE CATEGORY DATA ---
+// --- 1. IMPORT THE NEW VAULT SCREEN ---
+import 'package:homely/features/vault/presentation/screens/vault_list_screen.dart';
+// Note: We'll skip importing the recipe screen for now as requested
+
+// Your existing LibraryCategory class...
 class LibraryCategory {
   final String title;
   final IconData icon;
@@ -22,13 +25,11 @@ class LibraryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // --- 3. BUILD THE LIST OF CATEGORIES FROM DESIGN DOC ---
     final List<LibraryCategory> categories = [
       LibraryCategory(
         title: 'Shopping List',
         icon: EvaIcons.shoppingCartOutline,
         onTap: () {
-          // --- 4. NAVIGATE TO THE FULL SCREEN ---
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -41,7 +42,7 @@ class LibraryScreen extends StatelessWidget {
         title: 'Recipes',
         icon: EvaIcons.bookOpenOutline,
         onTap: () {
-          // TODO: Navigate to Recipe Book
+          // TODO: Navigate to RecipeListScreen when ready
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Recipes feature coming soon!')));
         },
@@ -60,7 +61,7 @@ class LibraryScreen extends StatelessWidget {
       ),
       LibraryCategory(
         title: 'Pantry',
-        icon: EvaIcons.archiveOutline,
+        icon: EvaIcons.cubeOutline,
         onTap: () {
           Navigator.push(
             context,
@@ -72,28 +73,31 @@ class LibraryScreen extends StatelessWidget {
       ),
       LibraryCategory(
         title: 'The Vault',
-        icon: EvaIcons.lockOutline,
+        icon: EvaIcons.archiveOutline,
         onTap: () {
-          // TODO: Navigate to Vault
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Vault feature coming soon!')));
+          // --- 2. NAVIGATE TO THE NEW SCREEN ---
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const VaultListScreen(),
+            ),
+          );
         },
       ),
     ];
 
-    // This is the "Library" screen (Tab 2)
+    // --- (Rest of the file is identical) ---
     return Scaffold(
       appBar: AppBar(
         title: const Text('Library'),
       ),
-      // --- 5. REPLACE BODY WITH A GRIDVIEW ---
       body: GridView.builder(
         padding: const EdgeInsets.all(AppTheme.spacingMedium),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, // Two columns
+          crossAxisCount: 2,
           crossAxisSpacing: AppTheme.spacingMedium,
           mainAxisSpacing: AppTheme.spacingMedium,
-          childAspectRatio: 1.2, // Taller than they are wide
+          childAspectRatio: 1.2,
         ),
         itemCount: categories.length,
         itemBuilder: (context, index) {
