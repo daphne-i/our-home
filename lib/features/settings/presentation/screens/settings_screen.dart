@@ -4,9 +4,10 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:homely/features/auth/application/auth_service.dart';
 import 'package:homely/core/providers/theme_provider.dart';
 import 'package:homely/features/household/presentation/screens/household_settings_screen.dart';
-
-// --- 1. IMPORT THE NEW THEME SCREEN ---
 import 'package:homely/features/settings/presentation/screens/theme_settings_screen.dart';
+
+// --- 1. IMPORT THE NEW SCREEN ---
+import 'package:homely/features/settings/presentation/screens/manage_categories_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -14,8 +15,8 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-
     final themeSettings = ref.watch(themeNotifierProvider);
+    // (rest of your build method variables...)
     final themeName =
         themeSettings.preset == AppThemePreset.ocean ? "Ocean" : "Neutral";
     final themeMode = themeSettings.mode.name;
@@ -60,7 +61,6 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Theme'),
             trailing: const Icon(EvaIcons.arrowIosForwardOutline),
             onTap: () {
-              // --- 2. ADD NAVIGATION HERE ---
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -74,7 +74,13 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Manage Categories'),
             trailing: const Icon(EvaIcons.arrowIosForwardOutline),
             onTap: () {
-              // TODO: Navigate to Manage Categories Screen
+              // --- 2. ADD NAVIGATION HERE ---
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ManageCategoriesScreen(),
+                ),
+              );
             },
           ),
           const Divider(),
